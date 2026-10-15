@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Sidebar, NavigationPath } from './components/Sidebar';
 import { Header } from './components/Header';
 import { INITIAL_STUDENTS } from './data/mockData';
@@ -17,10 +17,40 @@ import { PanduanGuruView } from './views/PanduanGuruView';
 
 export default function App() {
   const [currentPath, setCurrentPath] = useState<NavigationPath>('dashboard');
-  const [students, setStudents] = useState<Student[]>(INITIAL_STUDENTS);
-  const [academicYear, setAcademicYear] = useState<string>('2026/2027 - Ganjil');
+  const [students, setStudents] = useState<Student[]>(() => {
+    try {
+      const saved = localStorage.getItem('ziesorra-parent-insight-students-v1');
+      return saved ? JSON.parse(saved) as Student[] : INITIAL_STUDENTS;
+    } catch {
+      return INITIAL_STUDENTS;
+    }
+  });
+  const [academicYear, setAcademicYear] = useState<string>(() => {
+    try {
+      return localStorage.getItem('ziesorra-parent-insight-academic-year-v1') || '2026/2027 - Ganjil';
+    } catch {
+      return '2026/2027 - Ganjil';
+    }
+  });
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState<boolean>(false);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
+
+  // Browser-local persistence only; not a secure multi-user database.
+  useEffect(() => {
+    try {
+      localStorage.setItem('ziesorra-parent-insight-students-v1', JSON.stringify(students));
+    } catch {
+      setToastMessage('Penyimpanan browser penuh atau tidak tersedia. Catat perubahan agar tidak hilang.');
+    }
+  }, [students]);
+
+  useEffect(() => {
+    try {
+      localStorage.setItem('ziesorra-parent-insight-academic-year-v1', academicYear);
+    } catch {
+      // Continue if browser storage is unavailable.
+    }
+  }, [academicYear]);
 
   const showToast = (message: string) => {
     setToastMessage(message);

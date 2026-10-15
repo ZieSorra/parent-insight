@@ -9,11 +9,10 @@ interface UploadLeggerViewProps {
 
 export const UploadLeggerView: React.FC<UploadLeggerViewProps> = ({ onSuccessImport, onNavigate }) => {
   const [leggerItems, setLeggerItems] = useState<LeggerUploadItem[]>(INITIAL_LEGGER_ITEMS);
-  const [importHistories, setImportHistories] = useState<ImportHistory[]>(INITIAL_IMPORT_HISTORIES);
+  const [importHistories] = useState<ImportHistory[]>(INITIAL_IMPORT_HISTORIES);
   const [searchQuery, setSearchQuery] = useState('');
   const [activeTab, setActiveTab] = useState<'all' | 'valid' | 'anomaly' | 'mismatch'>('all');
   const [selectedNos, setSelectedNos] = useState<number[]>([1, 2, 3, 6, 7]);
-  const [isImporting, setIsImporting] = useState(false);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
 
   // Anomaly fix modal state
@@ -771,17 +770,10 @@ export const UploadLeggerView: React.FC<UploadLeggerViewProps> = ({ onSuccessImp
                   <td className="py-3.5 px-4 text-center font-mono">{hist.rowCount} Siswa</td>
                   <td className="py-3.5 px-4 text-on-surface">{hist.operator}</td>
                   <td className="py-3.5 px-4">
-                    {hist.status === 'synchronized' ? (
-                      <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-semibold bg-surface-container-high text-primary">
-                        <span className="w-1.5 h-1.5 rounded-full bg-primary-container"></span>
-                        Berhasil Disinkronkan
-                      </span>
-                    ) : (
-                      <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-semibold bg-surface-container text-secondary">
-                        <span className="w-1.5 h-1.5 rounded-full bg-outline"></span>
-                        Arsip Valid
-                      </span>
-                    )}
+                    <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-semibold bg-surface-container text-secondary">
+                      <span className="w-1.5 h-1.5 rounded-full bg-outline"></span>
+                      Data contoh — tidak tersimpan
+                    </span>
                   </td>
                   <td className="py-3.5 px-4 text-right">
                     <button

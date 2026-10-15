@@ -106,11 +106,11 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
   };
 
   const handleSyncAgain = () => {
-    showToast('Sinkronisasi ulang legger kelas IV-A berhasil (28 Siswa terverifikasi).');
+    showToast('Sinkronisasi server belum tersedia. Data legger di halaman ini masih contoh prototipe.');
   };
 
   const handleExport = () => {
-    showToast('Laporan rekapitulasi legger dan wawancara rapor berhasil diunduh (PDF).');
+    showToast('Ekspor PDF belum tersedia. Tidak ada berkas yang diunduh.');
   };
 
   return (

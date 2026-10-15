@@ -133,7 +133,7 @@ export const DataSiswaView: React.FC<DataSiswaViewProps> = ({
     };
     onUpdateStudent(updated);
     setDrawerOpen(false);
-    showToast(`Data siswa ${updated.name} berhasil diperbarui & tersinkronisasi.`);
+    showToast(`Data siswa ${updated.name} diperbarui di browser ini; belum tersinkron ke server.`);
   };
 
   const openDeleteModal = (student: Student) => {
@@ -151,7 +151,7 @@ export const DataSiswaView: React.FC<DataSiswaViewProps> = ({
     onDeleteStudent(studentToDelete.id);
     setDeleteModalOpen(false);
     setStudentToDelete(null);
-    showToast(`Data siswa ${studentToDelete.name} berhasil diarsipkan.`);
+    showToast(`Data siswa ${studentToDelete.name} dihapus dari data lokal browser ini.`);
   };
 
   const handleCreateStudent = (e: React.FormEvent) => {

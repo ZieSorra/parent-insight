@@ -25,6 +25,8 @@ export default function App() {
   const [authError, setAuthError] = useState<string | null>(null);
   const [authBusy, setAuthBusy] = useState(false);
   const [profileStatus, setProfileStatus] = useState<string | null>(null);
+  const [workspaceId, setWorkspaceId] = useState<string | null>(null);
+  const [studentsLoaded, setStudentsLoaded] = useState(false);
 
   useEffect(() => {
     if (!supabase) {
@@ -61,11 +63,68 @@ export default function App() {
       } else if (!data || !data.workspace_id) {
         setProfileStatus('Akun berhasil login, tetapi belum memiliki workspace. Administrator perlu menetapkan workspace pada public.profiles.');
       } else {
+        setWorkspaceId(data.workspace_id);
         setProfileStatus(null);
       }
     })();
     return () => { cancelled = true; };
   }, [session]);
+
+  useEffect(() => {
+    if (!supabase || !session || !workspaceId) {
+      setStudentsLoaded(false);
+      return;
+    }
+    let cancelled = false;
+    (async () => {
+      const { data, error } = await supabase
+        .from('students')
+        .select('id, nis, nisn, full_name, gender, birth_place, birth_date, religion, blood_type, address, parent_name, parent_relation, parent_phone, parent_occupation, mother_name, mother_phone, mother_occupation, profile_data, class_id')
+        .eq('workspace_id', workspaceId)
+        .eq('is_active', true)
+        .order('full_name');
+      if (cancelled) return;
+      if (error) {
+        setToastMessage('Gagal membaca data siswa dari Supabase. Periksa RLS dan struktur tabel.');
+        setStudentsLoaded(true);
+        return;
+      }
+      const mapped: Student[] = (data || []).map((row: any) => {
+        const extra = row.profile_data && typeof row.profile_data === 'object' ? row.profile_data : {};
+        const scores = extra.scores || { pancasila: 0, indonesia: 0, matematika: 0, ipas: 0, seniBudaya: 0, pjok: 0 };
+        return {
+          ...INITIAL_STUDENTS[0],
+          ...extra,
+          id: row.id,
+          nis: row.nis || '',
+          nisn: row.nisn || '',
+          name: row.full_name || '',
+          gender: row.gender || 'L',
+          birthPlace: row.birth_place || '',
+          birthDate: row.birth_date || '',
+          religion: row.religion || '',
+          bloodType: row.blood_type || '',
+          address: row.address || '',
+          parentName: row.parent_name || '',
+          parentRelation: row.parent_relation || '',
+          parentPhone: row.parent_phone || '',
+          parentOccupation: row.parent_occupation || '',
+          motherName: row.mother_name || '',
+          motherPhone: row.mother_phone || '',
+          motherOccupation: row.mother_occupation || '',
+          classRoom: extra.classRoom || 'Belum ditetapkan',
+          phase: extra.phase || 'Fase C',
+          scores,
+          profileComplete: Boolean(row.address && row.parent_phone),
+          needsProfileUpdate: false,
+          hasWhatsApp: Boolean(row.parent_phone),
+        };
+      });
+      setStudents(mapped);
+      setStudentsLoaded(true);
+    })();
+    return () => { cancelled = true; };
+  }, [session, workspaceId]);
 
   const handleLogin = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -84,14 +143,7 @@ export default function App() {
   };
 
   const [currentPath, setCurrentPath] = useState<NavigationPath>('dashboard');
-  const [students, setStudents] = useState<Student[]>(() => {
-    try {
-      const saved = localStorage.getItem('ziesorra-parent-insight-students-v1');
-      return saved ? JSON.parse(saved) as Student[] : INITIAL_STUDENTS;
-    } catch {
-      return INITIAL_STUDENTS;
-    }
-  });
+  const [students, setStudents] = useState<Student[]>([]);
   const [academicYear, setAcademicYear] = useState<string>(() => {
     try {
       return localStorage.getItem('ziesorra-parent-insight-academic-year-v1') || '2026/2027 - Ganjil';
@@ -101,15 +153,6 @@ export default function App() {
   });
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState<boolean>(false);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
-
-  // Browser-local persistence only; not a secure multi-user database.
-  useEffect(() => {
-    try {
-      localStorage.setItem('ziesorra-parent-insight-students-v1', JSON.stringify(students));
-    } catch {
-      setToastMessage('Penyimpanan browser penuh atau tidak tersedia. Catat perubahan agar tidak hilang.');
-    }
-  }, [students]);
 
   useEffect(() => {
     try {
@@ -126,20 +169,56 @@ export default function App() {
     }, 4000);
   };
 
-  const handleAddStudent = (newStudent: Student) => {
-    setStudents(prev => [newStudent, ...prev]);
-    showToast(`Siswa "${newStudent.name}" ditambahkan ke penyimpanan browser ini, bukan database server.`);
+  const handleAddStudent = async (newStudent: Student) => {
+    if (!supabase || !session || !workspaceId) return;
+    const payload = {
+      workspace_id: workspaceId,
+      nis: newStudent.nis.trim(),
+      nisn: newStudent.nisn.trim() || null,
+      full_name: newStudent.name.trim(),
+      gender: newStudent.gender,
+      birth_place: newStudent.birthPlace || null,
+      birth_date: /^\\d{4}-\\d{2}-\\d{2}$/.test(newStudent.birthDate) ? newStudent.birthDate : null,
+      religion: newStudent.religion || null,
+      blood_type: newStudent.bloodType || null,
+      address: newStudent.address || null,
+      parent_name: newStudent.parentName || null,
+      parent_relation: newStudent.parentRelation || null,
+      parent_phone: newStudent.parentPhone || null,
+      parent_occupation: newStudent.parentOccupation || null,
+      mother_name: newStudent.motherName || null,
+      mother_phone: newStudent.motherPhone || null,
+      mother_occupation: newStudent.motherOccupation || null,
+      profile_data: { classRoom: newStudent.classRoom, phase: newStudent.phase, scores: newStudent.scores, academicGroup: newStudent.academicGroup, focusSubjects: newStudent.focusSubjects },
+    };
+    const { data, error } = await supabase.from('students').insert(payload).select('id').single();
+    if (error) { showToast(`Gagal menyimpan siswa ke database: ${error.message}`); return; }
+    setStudents(prev => [{ ...newStudent, id: data.id }, ...prev]);
+    showToast(`Siswa "${newStudent.name}" berhasil disimpan ke Supabase.`);
   };
 
-  const handleUpdateStudent = (updatedStudent: Student) => {
+  const handleUpdateStudent = async (updatedStudent: Student) => {
+    if (!supabase || !workspaceId) return;
+    const { error } = await supabase.from('students').update({
+      full_name: updatedStudent.name.trim(),
+      address: updatedStudent.address || null,
+      parent_name: updatedStudent.parentName || null,
+      parent_phone: updatedStudent.parentPhone || null,
+      profile_data: { classRoom: updatedStudent.classRoom, phase: updatedStudent.phase, scores: updatedStudent.scores, academicGroup: updatedStudent.academicGroup, focusSubjects: updatedStudent.focusSubjects },
+      updated_at: new Date().toISOString(),
+    }).eq('id', updatedStudent.id).eq('workspace_id', workspaceId);
+    if (error) { showToast(`Gagal memperbarui data di Supabase: ${error.message}`); return; }
     setStudents(prev => prev.map(s => s.id === updatedStudent.id ? updatedStudent : s));
-    showToast(`Data "${updatedStudent.name}" diperbarui di browser ini; belum tersinkron ke server.`);
+    showToast(`Data "${updatedStudent.name}" berhasil diperbarui di Supabase.`);
   };
 
-  const handleDeleteStudent = (studentId: string) => {
+  const handleDeleteStudent = async (studentId: string) => {
+    if (!supabase || !workspaceId) return;
     const student = students.find(s => s.id === studentId);
+    const { error } = await supabase.from('students').update({ is_active: false, updated_at: new Date().toISOString() }).eq('id', studentId).eq('workspace_id', workspaceId);
+    if (error) { showToast(`Gagal menghapus siswa dari Supabase: ${error.message}`); return; }
     setStudents(prev => prev.filter(s => s.id !== studentId));
-    showToast(`Siswa "${student?.name || 'Siswa'}" dihapus dari penyimpanan browser ini.`);
+    showToast(`Siswa "${student?.name || 'Siswa'}" dinonaktifkan di Supabase.`);
   };
 
   const handleSuccessImport = (count: number) => {
@@ -259,18 +338,18 @@ export default function App() {
         />
 
         <main className="flex-1 p-4 md:p-6 lg:p-8 max-w-7xl w-full mx-auto">
-          <div className="mb-5 rounded-xl border border-amber-300 bg-amber-50 px-4 py-3 text-amber-950" role="status">
+          <div className="mb-5 rounded-xl border border-emerald-300 bg-emerald-50 px-4 py-3 text-emerald-950" role="status">
             <div className="flex items-start gap-3">
-              <span className="material-symbols-outlined text-amber-700" aria-hidden="true">privacy_tip</span>
+              <span className="material-symbols-outlined text-emerald-700" aria-hidden="true">cloud_done</span>
               <div>
-                <p className="text-sm font-bold">Mode uji terbatas — data belum tersinkron ke server</p>
-                <p className="mt-1 text-xs leading-relaxed">Perubahan disimpan hanya di browser/perangkat ini. Belum ada login atau perlindungan akses berbasis akun. Jangan masukkan data pribadi siswa sungguhan melalui situs publik ini dan jangan gunakan perangkat bersama. Data contoh dapat direset dengan menghapus data situs di browser.</p>
+                <p className="text-sm font-bold">Supabase terhubung untuk Data Siswa</p>
+                <p className="mt-1 text-xs leading-relaxed">Data pada halaman Data Siswa dibaca dan disimpan melalui Supabase dengan RLS. Data wawancara, nilai Legger, dan tindak lanjut belum dimigrasikan; halaman lain masih dapat menampilkan data contoh. Gunakan data uji sampai semua modul selesai diverifikasi.</p>
               </div>
             </div>
           </div>
           {currentPath === 'dashboard' && (
             <DashboardView
-              students={students}
+              students={students.length ? students : INITIAL_STUDENTS}
               onNavigate={setCurrentPath}
               onUpdateStudent={handleUpdateStudent}
             />

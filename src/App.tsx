@@ -8,6 +8,7 @@ import type { Session } from '@supabase/supabase-js';
 import { isSupabaseConfigured, supabase } from './lib/supabase';
 import { Sidebar, NavigationPath } from './components/Sidebar';
 import { Header } from './components/Header';
+import { INITIAL_STUDENTS } from './data/mockData';
 import { Student } from './types';
 import { DashboardView } from './views/DashboardView';
 import { DataSiswaView } from './views/DataSiswaView';

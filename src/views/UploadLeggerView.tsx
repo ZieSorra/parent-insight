@@ -1,4 +1,5 @@
 import React, { useState, useMemo } from 'react';
+import * as XLSX from 'xlsx';
 import { LeggerUploadItem, ImportHistory } from '../types';
 import { INITIAL_LEGGER_ITEMS, INITIAL_IMPORT_HISTORIES } from '../data/mockData';
 
@@ -20,9 +21,12 @@ export const UploadLeggerView: React.FC<UploadLeggerViewProps> = ({ onSuccessImp
   const [edoScore, setEdoScore] = useState(85);
   const [dediIpas, setDediIpas] = useState(72);
 
-  // File upload simulator state
-  const [currentFileName, setCurrentFileName] = useState('Legger_Semester_1_Kelas4A_Final.xlsx');
-  const [selectedSheet, setSelectedSheet] = useState('Nilai_Sumatif_FaseB');
+  // Real local-file parsing state. Nothing is sent to a server.
+  const [currentFileName, setCurrentFileName] = useState('');
+  const [selectedSheet, setSelectedSheet] = useState('');
+  const [parsedRows, setParsedRows] = useState<Record<string, unknown>[]>([]);
+  const [availableSheets, setAvailableSheets] = useState<string[]>([]);
+  const [parseError, setParseError] = useState<string | null>(null);
 
   const showToast = (msg: string) => {
     setToastMessage(msg);
@@ -107,14 +111,45 @@ export const UploadLeggerView: React.FC<UploadLeggerViewProps> = ({ onSuccessImp
   };
 
   const handleExecuteImport = () => {
-    showToast('Impor belum aktif. Berkas belum dibaca, divalidasi, atau disimpan; tidak ada data yang dikirim ke server.');
+    if (!parsedRows.length) {
+      showToast('Belum ada baris yang terbaca. Pilih berkas Excel atau CSV terlebih dahulu.');
+      return;
+    }
+    showToast(`Pratinjau ${parsedRows.length} baris berhasil dibaca. Penyimpanan nilai belum aktif karena database belum terhubung.`);
   };
 
-  const handleSimulateChangeFile = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleSimulateChangeFile = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
-    if (file) {
-      setCurrentFileName(file.name);
-      showToast(`Nama berkas ${file.name} dipilih untuk pratinjau saja. Isi berkas belum dibaca atau divalidasi.`);
+    if (!file) return;
+    setCurrentFileName(file.name);
+    setParsedRows([]);
+    setParseError(null);
+    try {
+      const isCsv = /\.csv$/i.test(file.name);
+      let workbook: XLSX.WorkBook;
+      if (isCsv) {
+        const text = await file.text();
+        workbook = XLSX.read(text, { type: 'string', FS: text.includes(';') ? ';' : ',' });
+      } else if (/\.(xlsx|xls)$/i.test(file.name)) {
+        const buffer = await file.arrayBuffer();
+        workbook = XLSX.read(buffer, { type: 'array', cellDates: false });
+      } else {
+        throw new Error('Format tidak didukung. Gunakan berkas .xlsx, .xls, atau .csv.');
+      }
+      if (!workbook.SheetNames.length) throw new Error('Berkas tidak memiliki lembar yang dapat dibaca.');
+      setAvailableSheets(workbook.SheetNames);
+      const chosenSheet = workbook.SheetNames.includes(selectedSheet) ? selectedSheet : workbook.SheetNames[0];
+      setSelectedSheet(chosenSheet);
+      const sheet = workbook.Sheets[chosenSheet];
+      const rows = XLSX.utils.sheet_to_json<Record<string, unknown>>(sheet, { defval: '', raw: false });
+      const usableRows = rows.filter((row) => Object.values(row).some((value) => String(value ?? '').trim() !== ''));
+      if (!usableRows.length) throw new Error('Lembar terbaca, tetapi tidak ditemukan baris data dengan header pada baris pertama.');
+      setParsedRows(usableRows);
+      showToast(`Berkas berhasil dibaca: ${usableRows.length} baris pratinjau dari sheet “${chosenSheet}”. Belum disimpan ke database.`);
+    } catch (error) {
+      const message = error instanceof Error ? error.message : 'Berkas gagal dibaca.';
+      setParseError(message);
+      showToast(message);
     }
   };
 
@@ -135,18 +170,16 @@ export const UploadLeggerView: React.FC<UploadLeggerViewProps> = ({ onSuccessImp
         <div className="flex flex-col gap-1 min-w-0">
           <div className="flex items-center gap-2">
             <span className="text-[11px] font-semibold text-secondary uppercase tracking-wider">
-              Fase B
+              Fase C
             </span>
             <span className="text-outline-variant text-[11px]">•</span>
-            <span className="text-secondary text-[11px]">Kelas IV-A</span>
+            <span className="text-secondary text-[11px]">Kelas V-B</span>
             <span className="text-outline-variant text-[11px]">•</span>
             <span className="text-primary text-[11px] font-semibold">Impor Legger Nilai</span>
           </div>
           <h1 className="text-2xl font-bold text-on-surface tracking-tight">Upload Legger Nilai Rapor</h1>
           <p className="text-sm text-on-surface-variant max-w-3xl">
-            Area prototipe untuk alur impor legger. Saat ini berkas Excel/CSV belum dibaca atau divalidasi
-            otomatis dan aplikasi belum terhubung ke database. Gunakan data contoh di halaman ini hanya
-            untuk meninjau tampilan, bukan untuk mengimpor nilai nyata.
+            Pilih berkas Excel/CSV untuk membaca isi lembar dan meninjau baris secara lokal. Data tidak dikirim ke server dan belum disimpan ke database.
           </p>
         </div>
 
@@ -160,7 +193,7 @@ export const UploadLeggerView: React.FC<UploadLeggerViewProps> = ({ onSuccessImp
             <span>Unduh Template CSV</span>
           </button>
           <button
-            onClick={() => showToast('Panduan format kolom: No, NIS, NISN, Nama, dan 6 Mapel standar.')}
+            onClick={() => showToast('Format yang disarankan: No, NIS, NISN, NAMA, lalu kolom nilai sesuai Legger sekolah.')}
             className="flex items-center gap-2 px-4 py-2.5 rounded-lg bg-surface-container-low text-secondary hover:text-on-surface text-xs font-semibold transition-all border border-surface-container"
             type="button"
           >
@@ -184,11 +217,11 @@ export const UploadLeggerView: React.FC<UploadLeggerViewProps> = ({ onSuccessImp
           </div>
           <div>
             <div className="text-3xl font-bold text-on-surface">
-              28 <span className="text-base text-secondary font-normal">Baris contoh</span>
+              {parsedRows.length} <span className="text-base text-secondary font-normal">baris terbaca</span>
             </div>
             <div className="flex items-center gap-1.5 mt-1">
               <span className="inline-block w-2 h-2 rounded-full bg-primary"></span>
-              <span className="text-xs text-on-surface-variant">Angka ilustrasi, bukan hasil baca berkas</span>
+              <span className="text-xs text-on-surface-variant">Jumlah baris hasil pembacaan berkas terpilih</span>
             </div>
           </div>
         </div>
@@ -205,11 +238,11 @@ export const UploadLeggerView: React.FC<UploadLeggerViewProps> = ({ onSuccessImp
           </div>
           <div>
             <div className="text-3xl font-bold text-on-surface">
-              25 <span className="text-base text-primary font-semibold">(89.3%)</span>
+              {parsedRows.length ? parsedRows.filter((row) => String(row['NIS'] ?? row['Nis'] ?? row['nis'] ?? '').trim()).length : 0} <span className="text-base text-primary font-semibold">dengan NIS</span>
             </div>
             <div className="flex items-center gap-1.5 mt-1">
               <span className="inline-block w-2 h-2 rounded-full bg-primary-container"></span>
-              <span className="text-xs text-on-surface-variant">NIS cocok, nilai lengkap (0-100)</span>
+              <span className="text-xs text-on-surface-variant">Pemeriksaan awal keberadaan kolom NIS; belum dicocokkan dengan daftar siswa</span>
             </div>
           </div>
         </div>
@@ -226,11 +259,11 @@ export const UploadLeggerView: React.FC<UploadLeggerViewProps> = ({ onSuccessImp
           </div>
           <div>
             <div className="text-3xl font-bold text-error">
-              3 <span className="text-base text-error/80 font-normal">Baris</span>
+              {parseError ? 1 : 0} <span className="text-base text-error/80 font-normal">masalah baca</span>
             </div>
             <div className="flex items-center gap-1.5 mt-1">
               <span className="inline-block w-2 h-2 rounded-full bg-error"></span>
-              <span className="text-xs text-on-surface-variant">1 NIS hilang, 1 kosong, 1 &gt; 100</span>
+              <span className="text-xs text-on-surface-variant">{parseError || 'Validasi rentang nilai dan pencocokan siswa belum dijalankan'}</span>
             </div>
           </div>
         </div>
@@ -264,7 +297,7 @@ export const UploadLeggerView: React.FC<UploadLeggerViewProps> = ({ onSuccessImp
             <h2 className="text-lg font-bold text-on-surface">Konfigurasi Target Legger</h2>
           </div>
           <span className="text-[11px] font-semibold text-secondary bg-surface-container-low px-2.5 py-1 rounded-md self-start sm:self-auto border border-surface-container">
-            Mode prototipe: belum terhubung ke database
+            Baca berkas aktif • simpan ke database belum tersedia
           </span>
         </div>
 
@@ -305,9 +338,8 @@ export const UploadLeggerView: React.FC<UploadLeggerViewProps> = ({ onSuccessImp
             <label className="text-xs font-semibold text-on-surface-variant">Kelas / Fase</label>
             <div className="relative">
               <select className="w-full appearance-none bg-surface-container-low text-on-surface text-xs font-medium pl-3 pr-8 py-2.5 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/20 cursor-pointer border border-transparent hover:border-surface-container">
-                <option>Kelas IV-A (Fase B)</option>
-                <option>Kelas IV-B (Fase B)</option>
-                <option>Kelas III-A (Fase B)</option>
+                <option>Kelas V-B (Fase C)</option>
+                <option>Kelas V-A (Fase C)</option>
               </select>
               <span className="material-symbols-outlined text-[18px] text-secondary absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none">
                 expand_more
@@ -339,9 +371,7 @@ export const UploadLeggerView: React.FC<UploadLeggerViewProps> = ({ onSuccessImp
                 onChange={(e) => setSelectedSheet(e.target.value)}
                 className="w-full appearance-none bg-surface-container-low text-on-surface text-xs font-medium pl-3 pr-8 py-2.5 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/20 cursor-pointer border border-transparent hover:border-surface-container"
               >
-                <option value="Nilai_Sumatif_FaseB">Nilai_Sumatif_FaseB (28)</option>
-                <option value="Rekap_Kehadiran_Kelas4A">Rekap_Kehadiran_Kelas4A</option>
-                <option value="Nilai_Karakter_Pancasila">Nilai_Karakter_Pancasila</option>
+                {availableSheets.length ? availableSheets.map((sheetName) => <option key={sheetName} value={sheetName}>{sheetName}</option>) : <option value="">Pilih berkas terlebih dahulu</option>}
               </select>
               <span className="material-symbols-outlined text-[18px] text-secondary absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none">
                 expand_more
@@ -360,14 +390,14 @@ export const UploadLeggerView: React.FC<UploadLeggerViewProps> = ({ onSuccessImp
               <div className="flex items-center gap-2 flex-wrap">
                 <span className="text-sm font-bold text-on-surface truncate">{currentFileName}</span>
                 <span className="px-2 py-0.5 rounded-full text-[11px] bg-surface-container-highest text-primary font-semibold">
-                  184 KB
+                  {parsedRows.length ? `${parsedRows.length} baris` : 'Belum dibaca'}
                 </span>
                 <span className="px-2 py-0.5 rounded-full text-[11px] bg-secondary-container text-on-secondary-container font-medium">
-                  Terunggah 09:15 WIB
+                  {parsedRows.length ? 'Berhasil dibaca lokal' : 'Belum dipilih'}
                 </span>
               </div>
               <span className="text-xs text-secondary mt-0.5">
-                Diproses oleh: Ibu Siti Rahmawati, S.Pd. • 6 Kolom Mata Pelajaran terdeteksi otomatis
+                Pembacaan lokal di browser • tidak ada data yang dikirim ke server
               </span>
             </div>
           </div>

@@ -201,7 +201,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
             <span className="inline-flex items-center gap-1.5 text-on-surface-variant font-medium">
               <span className="w-2 h-2 rounded-full bg-primary"></span> 100% Sinkron Legger
             </span>
-            <span className="text-secondary font-medium">Kelas IV-A</span>
+            <span className="text-secondary font-medium">Kelas V-B</span>
           </div>
         </div>
 
@@ -299,7 +299,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
               </span>
             </div>
             <p className="text-xs text-secondary">
-              Berdasarkan nilai agregat sumatif & bukti portofolio pembelajaran Fase B
+              Berdasarkan nilai agregat sumatif & bukti portofolio pembelajaran Fase C
             </p>
           </div>
 
@@ -723,7 +723,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
               <span className="material-symbols-outlined text-[22px]">psychology_alt</span>
             </div>
             <div>
-              <h3 className="text-base font-bold text-on-surface">Kerangka Wawancara Efektif (Fase B)</h3>
+              <h3 className="text-base font-bold text-on-surface">Kerangka Wawancara Efektif (Fase C)</h3>
               <p className="text-xs text-secondary">
                 Panduan observasi tanpa asumsi: gali aktivitas kegemaran, durasi fokus, dan lingkungan pendampingan.
               </p>

@@ -16,7 +16,7 @@ export const Header: React.FC<HeaderProps> = ({
   onNavigate,
   academicYear,
   setAcademicYear,
-  selectedClass = 'IV-A',
+  selectedClass = 'V-B',
   setSelectedClass = () => {},
   onToggleMobileMenu,
 }) => {
@@ -28,31 +28,31 @@ export const Header: React.FC<HeaderProps> = ({
       case 'dashboard':
         return {
           section: 'Akademik',
-          phase: 'Fase B',
+          phase: 'Fase C',
           title: 'Dashboard Akademik & Insight',
         };
       case 'data-siswa':
         return {
-          section: 'Fase B • Kelas IV-A',
+          section: 'Fase C • Kelas V-B',
           phase: 'Basis Data',
           title: 'Manajemen Data Siswa',
         };
       case 'upload-legger':
         return {
-          section: 'Fase B',
+          section: 'Fase C',
           phase: 'Impor Nilai',
           title: 'Upload Legger Nilai Rapor',
         };
       case 'wawancara-orang-tua':
         return {
-          section: 'Fase B • Kelas IV-A',
+          section: 'Fase C • Kelas V-B',
           phase: 'Dialog Ortu',
           title: 'Wawancara & Kemitraan Orang Tua',
         };
       case 'analisis-dan-tindak-lanjut':
         return {
           section: 'Akademik & Perkembangan',
-          phase: 'Fase B',
+          phase: 'Fase C',
           title: 'Analisis & Tindak Lanjut',
         };
       case 'panduan-guru':
@@ -118,8 +118,8 @@ export const Header: React.FC<HeaderProps> = ({
               onChange={(e) => setSelectedClass(e.target.value)}
               className="appearance-none bg-surface-container-low text-on-surface text-xs font-medium pl-3 pr-8 py-2 rounded-lg cursor-pointer focus:outline-none focus:ring-2 focus:ring-primary/20 border border-transparent hover:border-surface-container"
             >
-              <option value="IV-A">Kelas: IV-A (Fase B)</option>
-              <option value="IV-B">Kelas: IV-B (Fase B)</option>
+              <option value="V-B">Kelas: V-B (Fase C)</option>
+              <option value="V-A">Kelas: V-A (Fase C)</option>
             </select>
             <span className="material-symbols-outlined text-[18px] text-secondary absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none">
               expand_more
@@ -227,7 +227,7 @@ export const Header: React.FC<HeaderProps> = ({
               Ibu Siti Rahmawati, S.Pd.
             </span>
             <span className="text-[11px] text-secondary leading-tight">
-              Wali Kelas IV-A
+              Wali Kelas V-B
             </span>
           </div>
         </div>

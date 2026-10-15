@@ -76,7 +76,7 @@ export default function App() {
   };
 
   const handleSuccessImport = (count: number) => {
-    showToast(`Berhasil menyinkronkan legger nilai rapor (${count} baris data siswa tervalidasi).`);
+    showToast(`Simulasi pratinjau selesai: ${count} baris terpilih. Data belum disimpan ke server.`);
     setCurrentPath('dashboard');
   };
 

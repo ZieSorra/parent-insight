@@ -158,9 +158,9 @@ export const WawancaraView: React.FC<WawancaraViewProps> = ({
       <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6">
         <div className="flex flex-col gap-1 min-w-0">
           <div className="flex items-center gap-2 text-[11px] font-bold uppercase tracking-wider text-primary">
-            <span>Fase B</span>
+            <span>Fase C</span>
             <span className="text-outline-variant">•</span>
-            <span>Kelas IV-A</span>
+            <span>Kelas V-B</span>
             <span className="text-outline-variant">•</span>
             <span className="text-on-surface-variant font-medium">Instrumen Evaluasi & Dialog</span>
           </div>
@@ -677,7 +677,7 @@ export const WawancaraView: React.FC<WawancaraViewProps> = ({
                     <span className="text-[11px] text-error font-semibold uppercase">
                       Rencana Solutif Matematika
                     </span>
-                    <span className="text-[11px] text-on-surface-variant">Fase B</span>
+                    <span className="text-[11px] text-on-surface-variant">Fase C</span>
                   </div>
                   <p className="text-xs text-on-surface mt-1 leading-relaxed">
                     Gunakan manipulatif konkret (balok pecahan & grid kotak perkalian) di kelas. Kolaborasi rumah: kuis santai 10 menit tanpa timer.
@@ -1014,7 +1014,7 @@ export const WawancaraView: React.FC<WawancaraViewProps> = ({
               <span className="text-xs font-bold uppercase">2. Area yang Memerlukan Dukungan</span>
             </div>
             <p className="text-xs text-on-surface leading-relaxed">
-              Transisi konsep operasi hitung susun (perkalian & pembagian Fase B) menimbulkan kecemasan
+              Transisi konsep operasi hitung susun (perkalian & pembagian Fase C) menimbulkan kecemasan
               bila diuji secara cepat. Memerlukan jembatan representasi benda konkret sebelum rumus abstrak.
             </p>
           </div>
@@ -1081,7 +1081,7 @@ export const WawancaraView: React.FC<WawancaraViewProps> = ({
                       LEMBAR KESEPAKATAN PENDAMPINGAN BELAJAR
                     </h2>
                     <p className="text-xs text-slate-500">
-                      SDN Harapan Utama • Kelas IV-A (Fase B) • Semester Ganjil 2024/2025
+                      SDN Harapan Utama • Kelas V-B (Fase C) • Semester Ganjil 2026/2027
                     </p>
                   </div>
                 </div>
@@ -1133,7 +1133,7 @@ export const WawancaraView: React.FC<WawancaraViewProps> = ({
                   <p className="font-bold underline">{activeStudent.parentName}</p>
                 </div>
                 <div>
-                  <p>Wali Kelas IV-A,</p>
+                  <p>Wali Kelas V-B,</p>
                   <div className="h-16"></div>
                   <p className="font-bold underline">Ibu Siti Rahmawati, S.Pd.</p>
                 </div>

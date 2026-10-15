@@ -55,3 +55,27 @@ Tahun ajaran awal yang dipilih adalah **2026/2027 — Ganjil**. Opsi 2024/2025 d
 - Jangan commit `.env.local`, token, password, service-role key, atau kredensial lainnya.
 - Rahasia tidak boleh diletakkan dalam kode frontend atau variabel `VITE_*`.
 - Sebelum digunakan dengan data nyata, siapkan autentikasi, Row Level Security (RLS), dan kebijakan akses yang sesuai.
+
+## Integrasi Supabase
+
+Supabase adalah database utama proyek ini. Klien browser dibuat di `src/lib/supabase.ts` dan hanya membaca konfigurasi dari environment:
+
+- `VITE_SUPABASE_URL`
+- `VITE_SUPABASE_PUBLISHABLE_KEY`
+
+Jangan pernah memasukkan service-role key atau password database ke frontend, Git, atau variabel `VITE_*`.
+
+### Menyiapkan database
+
+1. Buka **Supabase Dashboard → SQL Editor** pada proyek yang benar.
+2. Tinjau lalu jalankan isi `supabase/schema.sql`. Skrip membuat tabel tenant-scoped dan mengaktifkan RLS.
+3. Buat akun melalui Supabase Auth. Profil baru tidak otomatis diberi workspace; ini disengaja agar pengguna tidak bisa memilih workspace sendiri.
+4. Sebagai administrator proyek, buat workspace dan tetapkan `profiles.workspace_id` serta `profiles.role` untuk akun pemilik/guru melalui SQL Editor. Jangan membuka policy agar pengguna dapat mengubah workspace atau role sendiri.
+5. Di GitHub, buka **Settings → Secrets and variables → Actions → New repository secret**. Tambahkan:
+   - `VITE_SUPABASE_URL` = URL proyek Supabase
+   - `VITE_SUPABASE_PUBLISHABLE_KEY` = publishable key
+6. Jalankan ulang workflow GitHub Pages. Untuk pengembangan lokal, salin `.env.example` menjadi `.env.local` lalu isi nilai yang sama.
+
+### Status dan batas integrasi
+
+Skema database dan klien Supabase disiapkan, tetapi halaman CRUD aplikasi belum seluruhnya dimigrasikan dari state/localStorage ke query Supabase. Jangan anggap data contoh yang tampak di halaman sebagai data database. Uji login, RLS antar-workspace, dan operasi CRUD sebelum memasukkan data siswa sungguhan.

@@ -186,7 +186,7 @@ export const AnalisisTindakLanjutView: React.FC<AnalisisTindakLanjutViewProps> =
         {/* Top Actions */}
         <div className="flex items-center gap-3 shrink-0">
           <button
-            onClick={() => showToast('Laporan sintesis tindak lanjut (.pdf) berhasil diunduh.')}
+            onClick={() => showToast('Ekspor PDF belum tersedia. Tidak ada berkas yang diunduh.')}
             className="flex items-center gap-2 bg-surface-container-lowest hover:bg-surface-container-low text-on-surface px-4 py-2.5 rounded-lg text-xs font-semibold transition-all shadow-sm border border-surface-container"
             type="button"
           >

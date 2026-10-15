@@ -52,7 +52,16 @@ export const UploadLeggerView: React.FC<UploadLeggerViewProps> = ({ onSuccessImp
   }, [leggerItems, searchQuery, activeTab]);
 
   const downloadLeggerTemplate = () => {
-    const csv = '\uFEFFNo;NIS;NISN;Nama;Pancasila;Bahasa Indonesia;Matematika;IPAS;Seni Budaya;PJOK\r\n1;;;;;;;;;';
+    // Match the school's real Grade 5B PTS ledger: 17 subjects, each with F1, F2, and Mid.
+    const subjects = [
+      'PAI', 'PKN', 'B. Ind', 'MTK', 'IPAS', 'SBK', 'PJOK',
+      'B. Inggris', 'Budi Pekerti', 'Tahfidz', "Qira'at", 'Kitabah',
+      'Tajwid', 'A. Akhlaq', 'F. Ibadah', 'B. Arab', 'ICT',
+    ];
+    const headers = ['No', 'NIS', 'NISN', 'NAMA'];
+    subjects.forEach((subject) => headers.push(`${subject} F1`, `${subject} F2`, `${subject} Mid`));
+    const blankRow = headers.map((_, index) => index === 0 ? '1' : '');
+    const csv = '\\uFEFF' + headers.join(';') + '\\r\\n' + blankRow.join(';');
     const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
     const url = URL.createObjectURL(blob);
     const link = document.createElement('a');

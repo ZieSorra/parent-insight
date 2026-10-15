@@ -172,8 +172,8 @@ export const DataSiswaView: React.FC<DataSiswaViewProps> = ({
       religion: 'Islam',
       bloodType: 'O',
       address: 'Jl. Harapan No. 1, Bandung',
-      classRoom: 'IV-A',
-      phase: 'Fase B',
+      classRoom: 'V-B',
+      phase: 'Fase C',
       academicGroup: 'penguatan',
       averageScore: 75.0,
       focusSubjects: ['Matematika', 'B. Indonesia'],
@@ -202,7 +202,7 @@ export const DataSiswaView: React.FC<DataSiswaViewProps> = ({
     setNewStudentNisn('');
     setNewStudentParent('');
     setNewStudentPhone('');
-    showToast(`Siswa baru ${newStudent.name} berhasil ditambahkan ke kelas IV-A.`);
+    showToast(`Siswa baru ${newStudent.name} berhasil ditambahkan ke kelas V-B.`);
   };
 
   const exportStudentsCsv = () => {
@@ -254,7 +254,7 @@ export const DataSiswaView: React.FC<DataSiswaViewProps> = ({
         <div className="space-y-1">
           <div className="flex items-center gap-2">
             <span className="px-2.5 py-0.5 rounded-full bg-secondary-container text-on-secondary-fixed text-[11px] font-semibold uppercase tracking-wide">
-              Fase B • Kelas IV-A
+              Fase C • Kelas V-B
             </span>
             <span className="text-secondary text-xs">• Basis Data Terpadu</span>
           </div>
@@ -423,8 +423,8 @@ export const DataSiswaView: React.FC<DataSiswaViewProps> = ({
 
             <div className="relative">
               <select className="h-11 appearance-none bg-surface-container-low text-on-surface text-xs font-medium pl-3 pr-8 rounded-lg cursor-pointer focus:outline-none focus:ring-2 focus:ring-primary/20 border border-transparent hover:border-surface-container">
-                <option>Kelas: IV-A (Fase B)</option>
-                <option>Kelas: IV-B (Fase B)</option>
+                <option>Kelas: V-B (Fase C)</option>
+                <option>Kelas: V-A (Fase C)</option>
                 <option>Semua Kelas</option>
               </select>
               <span className="material-symbols-outlined text-[18px] text-secondary absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none">
@@ -756,7 +756,7 @@ export const DataSiswaView: React.FC<DataSiswaViewProps> = ({
             </span>
             <span>dari</span>
             <span className="font-semibold text-on-surface">{filteredStudents.length}</span>
-            <span>siswa aktif di Kelas IV-A</span>
+            <span>siswa aktif di Kelas V-B</span>
           </div>
 
           <div className="flex items-center gap-1.5">
@@ -1018,7 +1018,7 @@ export const DataSiswaView: React.FC<DataSiswaViewProps> = ({
                     <div className="bg-surface-container-low p-4 rounded-xl border border-surface-container">
                       <div className="flex items-center justify-between text-xs mb-2">
                         <span className="font-semibold text-on-surface">Rekap Nilai Sumatif SAS 1</span>
-                        <span className="text-secondary font-mono">Fase B Kurikulum Merdeka</span>
+                        <span className="text-secondary font-mono">Fase C Kurikulum Merdeka</span>
                       </div>
                       <div className="grid grid-cols-2 gap-2 text-xs">
                         <div className="bg-surface-container-lowest p-2.5 rounded-lg flex justify-between">
@@ -1191,7 +1191,7 @@ export const DataSiswaView: React.FC<DataSiswaViewProps> = ({
               <div className="flex items-center justify-between pb-2 border-b border-surface-container">
                 <div className="flex items-center gap-2">
                   <span className="material-symbols-outlined text-primary text-[22px]">person_add</span>
-                  <h3 className="text-lg font-bold text-on-surface">Tambah Siswa Baru (Kelas IV-A)</h3>
+                  <h3 className="text-lg font-bold text-on-surface">Tambah Siswa Baru (Kelas V-B)</h3>
                 </div>
                 <button
                   onClick={() => setAddModalOpen(false)}

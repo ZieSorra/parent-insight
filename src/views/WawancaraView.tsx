@@ -176,7 +176,7 @@ export const WawancaraView: React.FC<WawancaraViewProps> = ({
 
         <div className="flex items-center gap-3 flex-shrink-0">
           <button
-            onClick={() => showToast('Panduan dialog wawancara orang tua (.pdf) berhasil diunduh.')}
+            onClick={() => showToast('Unduhan PDF belum tersedia. Panduan belum diunduh sebagai berkas.')}
             className="flex items-center gap-2 px-4 py-2.5 rounded-lg bg-surface-container-low text-on-surface text-xs font-semibold hover:bg-surface-container transition-all shadow-sm border border-surface-container"
             type="button"
           >

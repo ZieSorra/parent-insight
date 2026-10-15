@@ -205,11 +205,26 @@ export const DataSiswaView: React.FC<DataSiswaViewProps> = ({
     showToast(`Siswa baru ${newStudent.name} berhasil ditambahkan ke kelas IV-A.`);
   };
 
+  const exportStudentsCsv = () => {
+    const headers = ['NIS', 'NISN', 'Nama', 'Jenis Kelamin', 'Kelas', 'Nama Orang Tua', 'Telepon Orang Tua', 'Alamat'];
+    const rows = filteredStudents.map((s) => [s.nis, s.nisn, s.name, s.gender, s.classRoom, s.parentName, s.parentPhone, s.address || '']);
+    const escapeCsv = (value: unknown) => '"' + String(value ?? '').replace(/"/g, '""') + '"';
+    const csv = '\uFEFF' + [headers, ...rows].map((row) => row.map(escapeCsv).join(';')).join('\r\n');
+    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = 'data-siswa-parent-insight.csv';
+    link.click();
+    URL.revokeObjectURL(url);
+    showToast('Ekspor CSV selesai. Simpan file di lokasi yang aman.');
+  };
+
   const handleCloudSync = () => {
     setSyncingCloud(true);
     setTimeout(() => {
       setSyncingCloud(false);
-      showToast('28 Data Siswa berhasil disinkronkan ke Supabase Database.');
+      showToast('Perubahan tersimpan di browser ini. Sinkronisasi server belum tersedia.');
     }, 1500);
   };
 
@@ -253,7 +268,7 @@ export const DataSiswaView: React.FC<DataSiswaViewProps> = ({
         {/* Action Button Group */}
         <div className="flex flex-wrap items-center gap-3">
           <button
-            onClick={() => showToast('Data siswa Kelas IV-A berhasil diekspor ke Excel (.xlsx).')}
+            onClick={() => exportStudentsCsv()}
             className="flex items-center gap-2 bg-surface-container-lowest hover:bg-surface-container-high text-on-surface text-xs font-semibold px-4 py-2.5 rounded-lg shadow-sm border border-surface-container transition-all"
             type="button"
           >

@@ -93,11 +93,16 @@ export const WawancaraView: React.FC<WawancaraViewProps> = ({
   };
 
   const handleSendWhatsApp = () => {
-    const phone = activeStudent.parentPhone || '08123456789';
+    const rawPhone = activeStudent.parentPhone?.replace(/[^0-9]/g, '') || '';
+    if (!rawPhone) {
+      showToast('Nomor orang tua belum tersedia. Lengkapi dan verifikasi nomor sebelum membuka WhatsApp.');
+      return;
+    }
+    const phone = rawPhone.startsWith('0') ? '62' + rawPhone.slice(1) : rawPhone.startsWith('62') ? rawPhone : '62' + rawPhone;
     const text = encodeURIComponent(
       `Halo Bpk/Ibu ${activeStudent.parentName}, berikut ringkasan kesepakatan pembagian rapor semester ganjil Ananda ${activeStudent.name} di SDN Harapan Utama. Terima kasih atas kerja samanya.`
     );
-    window.open(`https://wa.me/62${phone.replace(/[^0-9]/g, '').slice(1)}?text=${text}`, '_blank');
+    window.open(`https://wa.me/${phone}?text=${text}`, '_blank', 'noopener,noreferrer');
     showToast(`Menyiapkan pesan WhatsApp ke ${activeStudent.parentName}...`);
   };
 

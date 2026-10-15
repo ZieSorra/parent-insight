@@ -141,6 +141,15 @@ export default function App() {
         />
 
         <main className="flex-1 p-4 md:p-6 lg:p-8 max-w-7xl w-full mx-auto">
+          <div className="mb-5 rounded-xl border border-amber-300 bg-amber-50 px-4 py-3 text-amber-950" role="status">
+            <div className="flex items-start gap-3">
+              <span className="material-symbols-outlined text-amber-700" aria-hidden="true">privacy_tip</span>
+              <div>
+                <p className="text-sm font-bold">Mode uji terbatas — data belum tersinkron ke server</p>
+                <p className="mt-1 text-xs leading-relaxed">Perubahan disimpan hanya di browser/perangkat ini. Belum ada login atau perlindungan akses berbasis akun. Jangan masukkan data pribadi siswa sungguhan melalui situs publik ini dan jangan gunakan perangkat bersama. Data contoh dapat direset dengan menghapus data situs di browser.</p>
+              </div>
+            </div>
+          </div>
           {currentPath === 'dashboard' && (
             <DashboardView
               students={students}

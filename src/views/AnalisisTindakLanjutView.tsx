@@ -32,7 +32,7 @@ export const AnalisisTindakLanjutView: React.FC<AnalisisTindakLanjutViewProps> =
   // Form states for Plan Tab
   const [planPriority, setPlanPriority] = useState(
     activeStudent.actionPlan?.priorityNeed ||
-      'Pemahaman Konseptual Perkalian Susun Bilangan Cacah (Matematika Fase B)'
+      'Pemahaman Konseptual Perkalian Susun Bilangan Cacah (Matematika Fase C)'
   );
   const [planReason, setPlanReason] = useState(
     activeStudent.actionPlan?.triangulationReason ||
@@ -165,10 +165,10 @@ export const AnalisisTindakLanjutView: React.FC<AnalisisTindakLanjutViewProps> =
         <div className="flex flex-col gap-1.5 max-w-3xl">
           <div className="flex items-center gap-2">
             <span className="text-[11px] font-semibold text-secondary uppercase tracking-widest">
-              Fase B
+              Fase C
             </span>
             <span className="text-outline-variant text-[11px]">•</span>
-            <span className="text-secondary text-[11px] uppercase tracking-widest">Kelas IV-A</span>
+            <span className="text-secondary text-[11px] uppercase tracking-widest">Kelas V-B</span>
             <span className="text-outline-variant text-[11px]">•</span>
             <span className="text-primary text-[11px] font-bold uppercase tracking-wider">
               Sintesis Data & Rencana Intervensi
@@ -552,7 +552,7 @@ export const AnalisisTindakLanjutView: React.FC<AnalisisTindakLanjutViewProps> =
                     <span className="text-xs font-bold text-on-surface">Sintesis Pedagogis Guru</span>
                   </div>
                   <span className="text-[11px] font-semibold text-primary bg-surface-container-high px-2 py-0.5 rounded">
-                    Fase B
+                    Fase C
                   </span>
                 </div>
 
@@ -784,7 +784,7 @@ export const AnalisisTindakLanjutView: React.FC<AnalisisTindakLanjutViewProps> =
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <div className="flex flex-col">
               <h3 className="text-base font-bold text-on-surface">
-                Daftar & Status Tindak Lanjut Siswa Kelas IV-A
+                Daftar & Status Tindak Lanjut Siswa Kelas V-B
               </h3>
               <p className="text-xs text-secondary">
                 Monitoring sintesis triangulasi dan perkembangan intervensi semester berjalan.
@@ -826,8 +826,8 @@ export const AnalisisTindakLanjutView: React.FC<AnalisisTindakLanjutViewProps> =
             </div>
             <div className="md:col-span-2 relative">
               <select className="w-full h-10 px-3 appearance-none rounded-lg bg-surface-container-lowest text-on-surface text-xs focus:outline-none cursor-pointer border border-surface-container">
-                <option>Kelas IV-A (Fase B)</option>
-                <option>Kelas IV-B (Fase B)</option>
+                <option>Kelas V-B (Fase C)</option>
+                <option>Kelas V-A (Fase C)</option>
               </select>
               <span className="material-symbols-outlined text-[18px] text-secondary absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none">
                 expand_more
@@ -1015,7 +1015,7 @@ export const AnalisisTindakLanjutView: React.FC<AnalisisTindakLanjutViewProps> =
         <div className="p-4 bg-surface-container-low flex flex-col sm:flex-row items-center justify-between gap-3 border-t border-surface-container text-xs">
           <span className="text-secondary">
             Menampilkan <span className="font-semibold text-on-surface">1 - 7</span> dari{' '}
-            <span className="font-semibold text-on-surface">{filteredStudents.length}</span> siswa (Kelas IV-A)
+            <span className="font-semibold text-on-surface">{filteredStudents.length}</span> siswa (Kelas V-B)
           </span>
           <div className="flex items-center gap-1.5">
             <button
@@ -1117,7 +1117,7 @@ export const AnalisisTindakLanjutView: React.FC<AnalisisTindakLanjutViewProps> =
           <div className="p-4 rounded-xl bg-surface-container-low flex flex-col justify-between gap-3 border border-surface-container">
             <div className="flex flex-col gap-1">
               <span className="text-[11px] text-secondary uppercase tracking-wider font-semibold">
-                Status Evaluasi Kelas IV-A
+                Status Evaluasi Kelas V-B
               </span>
               <div className="flex items-baseline gap-2 mt-1">
                 <span className="text-2xl text-on-surface font-bold">1 / 6</span>
@@ -1149,7 +1149,7 @@ export const AnalisisTindakLanjutView: React.FC<AnalisisTindakLanjutViewProps> =
       <div className="pt-2 pb-6 flex flex-col sm:flex-row items-center justify-between gap-2 text-secondary text-xs">
         <div className="flex items-center gap-1.5">
           <span className="material-symbols-outlined text-[16px] text-primary">security</span>
-          <span>Sistem Analisis & Tindak Lanjut ZIESORRA v2.4 • Kompatibel dengan Supabase RLS & Kurikulum Merdeka Fase B</span>
+          <span>Sistem Analisis & Tindak Lanjut ZIESORRA v2.4 • Kompatibel dengan Supabase RLS & Kurikulum Merdeka Fase C</span>
         </div>
         <span>Menjunjung privasi asesmen, etika pendidik, & tanpa pelabelan psikologis kaku</span>
       </div>

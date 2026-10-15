@@ -8,7 +8,6 @@ import type { Session } from '@supabase/supabase-js';
 import { isSupabaseConfigured, supabase } from './lib/supabase';
 import { Sidebar, NavigationPath } from './components/Sidebar';
 import { Header } from './components/Header';
-import { INITIAL_STUDENTS } from './data/mockData';
 import { Student } from './types';
 import { DashboardView } from './views/DashboardView';
 import { DataSiswaView } from './views/DataSiswaView';
@@ -26,7 +25,6 @@ export default function App() {
   const [authBusy, setAuthBusy] = useState(false);
   const [profileStatus, setProfileStatus] = useState<string | null>(null);
   const [workspaceId, setWorkspaceId] = useState<string | null>(null);
-  const [studentsLoaded, setStudentsLoaded] = useState(false);
 
   useEffect(() => {
     if (!supabase) {
@@ -72,7 +70,6 @@ export default function App() {
 
   useEffect(() => {
     if (!supabase || !session || !workspaceId) {
-      setStudentsLoaded(false);
       return;
     }
     let cancelled = false;
@@ -86,7 +83,6 @@ export default function App() {
       if (cancelled) return;
       if (error) {
         setToastMessage('Gagal membaca data siswa dari Supabase. Periksa RLS dan struktur tabel.');
-        setStudentsLoaded(true);
         return;
       }
       const mapped: Student[] = (data || []).map((row: any) => {
@@ -121,7 +117,6 @@ export default function App() {
         };
       });
       setStudents(mapped);
-      setStudentsLoaded(true);
     })();
     return () => { cancelled = true; };
   }, [session, workspaceId]);
@@ -349,7 +344,7 @@ export default function App() {
           </div>
           {currentPath === 'dashboard' && (
             <DashboardView
-              students={students.length ? students : INITIAL_STUDENTS}
+              students={students}
               onNavigate={setCurrentPath}
               onUpdateStudent={handleUpdateStudent}
             />

@@ -52,14 +52,18 @@ export const UploadLeggerView: React.FC<UploadLeggerViewProps> = ({ onSuccessImp
   }, [leggerItems, searchQuery, activeTab]);
 
   const downloadLeggerTemplate = () => {
-    // Match the school's real Grade 5B PTS ledger: 17 subjects, each with F1, F2, and Mid.
+    // Exact subject/assessment structure from the supplied "Leg. PTS 5B" worksheet.
     const subjects = [
       'PAI', 'PKN', 'B. Ind', 'MTK', 'IPAS', 'SBK', 'PJOK',
-      'B. Inggris', 'Budi Pekerti', 'Tahfidz', "Qira'at", 'Kitabah',
-      'Tajwid', 'A. Akhlaq', 'F. Ibadah', 'B. Arab', 'ICT',
+      'B. Inggris', 'Budi Pekerti',
     ];
     const headers = ['No', 'NIS', 'NISN', 'NAMA'];
     subjects.forEach((subject) => headers.push(`${subject} F1`, `${subject} F2`, `${subject} Mid`));
+    headers.push('Tahfidz 1', 'Tahfidz 2', 'Tahfidz 3', 'Tahfidz 4', 'Tahfidz 5');
+    ['Qira\'at', 'Kitabah', 'Tajwid', 'A. Akhlaq', 'F. Ibadah', 'B. Arab', 'ICT'].forEach((subject) =>
+      headers.push(`${subject} F1`, `${subject} F2`, `${subject} Mid`)
+    );
+    headers.push('Result Jml', 'Rata-rata', 'Catatan');
     const blankRow = headers.map((_, index) => index === 0 ? '1' : '');
     const csv = '\\uFEFF' + headers.join(';') + '\\r\\n' + blankRow.join(';');
     const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });

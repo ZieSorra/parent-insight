@@ -95,33 +95,14 @@ export const UploadLeggerView: React.FC<UploadLeggerViewProps> = ({ onSuccessImp
   };
 
   const handleExecuteImport = () => {
-    setIsImporting(true);
-    setTimeout(() => {
-      setIsImporting(false);
-      const validCount = selectedNos.length;
-      const newHistory: ImportHistory = {
-        id: `hist-${Date.now()}`,
-        fileName: currentFileName,
-        fileType: 'xlsx',
-        importTime: 'Hari ini, 09:45 WIB',
-        semester: 'Semester 1 (Ganjil)',
-        academicYear: '2026/2027',
-        phase: 'Fase B',
-        rowCount: 28,
-        operator: 'Ibu Siti Rahmawati, S.Pd.',
-        status: 'synchronized',
-      };
-      setImportHistories([newHistory, ...importHistories]);
-      onSuccessImport(validCount);
-      showToast(`${validCount} baris dipilih pada pratinjau prototipe; belum tersimpan ke server.`);
-    }, 1400);
+    showToast('Impor belum aktif. Berkas belum dibaca, divalidasi, atau disimpan; tidak ada data yang dikirim ke server.');
   };
 
   const handleSimulateChangeFile = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
       setCurrentFileName(file.name);
-      showToast(`Berkas ${file.name} berhasil diunggah. Memulai auto-audit legger...`);
+      showToast(`Nama berkas ${file.name} dipilih untuk pratinjau saja. Isi berkas belum dibaca atau divalidasi.`);
     }
   };
 
@@ -151,9 +132,9 @@ export const UploadLeggerView: React.FC<UploadLeggerViewProps> = ({ onSuccessImp
           </div>
           <h1 className="text-2xl font-bold text-on-surface tracking-tight">Upload Legger Nilai Rapor</h1>
           <p className="text-sm text-on-surface-variant max-w-3xl">
-            Impor berkas legger nilai dari format Excel (.xlsx, .xls) atau CSV. Lakukan validasi
-            otomatis identitas siswa (NIS/NISN) dan rentang nilai kurikulum sebelum disinkronkan ke
-            database akademik ZIESORRA.
+            Area prototipe untuk alur impor legger. Saat ini berkas Excel/CSV belum dibaca atau divalidasi
+            otomatis dan aplikasi belum terhubung ke database. Gunakan data contoh di halaman ini hanya
+            untuk meninjau tampilan, bukan untuk mengimpor nilai nyata.
           </p>
         </div>
 
@@ -164,7 +145,7 @@ export const UploadLeggerView: React.FC<UploadLeggerViewProps> = ({ onSuccessImp
             type="button"
           >
             <span className="material-symbols-outlined text-[18px] text-primary">download</span>
-            <span>Unduh Template (.xlsx)</span>
+            <span>Unduh Template CSV</span>
           </button>
           <button
             onClick={() => showToast('Panduan format kolom: No, NIS, NISN, Nama, dan 6 Mapel standar.')}
@@ -191,11 +172,11 @@ export const UploadLeggerView: React.FC<UploadLeggerViewProps> = ({ onSuccessImp
           </div>
           <div>
             <div className="text-3xl font-bold text-on-surface">
-              28 <span className="text-base text-secondary font-normal">Siswa</span>
+              28 <span className="text-base text-secondary font-normal">Baris contoh</span>
             </div>
             <div className="flex items-center gap-1.5 mt-1">
               <span className="inline-block w-2 h-2 rounded-full bg-primary"></span>
-              <span className="text-xs text-on-surface-variant">1 Berkas Aktif (Sheet 1)</span>
+              <span className="text-xs text-on-surface-variant">Angka ilustrasi, bukan hasil baca berkas</span>
             </div>
           </div>
         </div>
@@ -714,10 +695,10 @@ export const UploadLeggerView: React.FC<UploadLeggerViewProps> = ({ onSuccessImp
           </div>
           <div className="flex flex-col">
             <span className="text-sm font-bold text-on-surface">
-              {selectedNos.length} dari {leggerItems.length} Siswa Siap Diimpor ke Database
+              Mode pratinjau — impor database belum tersedia
             </span>
             <span className="text-xs text-secondary">
-              {leggerItems.filter((i) => i.status === 'anomaly').length} baris anomali akan dilewati (dapat diperbaiki nanti atau diunggah ulang).
+              {leggerItems.filter((i) => i.status === 'anomaly').length} contoh anomali. Tidak ada data yang akan disimpan ke server.
             </span>
           </div>
         </div>
@@ -739,23 +720,12 @@ export const UploadLeggerView: React.FC<UploadLeggerViewProps> = ({ onSuccessImp
             <span>Perbaiki Anomali</span>
           </button>
           <button
-            disabled={isImporting}
             onClick={handleExecuteImport}
-            className="flex items-center gap-2 px-6 py-2.5 rounded-lg bg-primary-container hover:bg-primary text-on-primary font-bold text-xs transition-all shadow-md active:scale-98 disabled:opacity-70"
+            className="flex items-center gap-2 px-6 py-2.5 rounded-lg bg-surface-container-high text-secondary font-bold text-xs transition-all shadow-sm"
             type="button"
           >
-            <span
-              className={`material-symbols-outlined text-[20px] ${
-                isImporting ? 'animate-spin' : ''
-              }`}
-            >
-              {isImporting ? 'sync' : 'database'}
-            </span>
-            <span>
-              {isImporting
-                ? 'Menyinkronkan ke Supabase...'
-                : `Impor ${selectedNos.length} Data Valid ke Database`}
-            </span>
+            <span className="material-symbols-outlined text-[20px]">info</span>
+            <span>Impor belum aktif</span>
           </button>
         </div>
       </div>
@@ -767,7 +737,7 @@ export const UploadLeggerView: React.FC<UploadLeggerViewProps> = ({ onSuccessImp
             <span className="material-symbols-outlined text-primary text-[22px]">history</span>
             <h2 className="text-lg font-bold text-on-surface">Riwayat Impor & Audit Trail Legger</h2>
           </div>
-          <span className="text-xs text-secondary font-mono">Tersimpan dalam log Supabase Storage</span>
+          <span className="text-xs text-secondary font-mono">Riwayat contoh lokal — bukan log server</span>
         </div>
 
         <div className="overflow-x-auto">
@@ -834,7 +804,7 @@ export const UploadLeggerView: React.FC<UploadLeggerViewProps> = ({ onSuccessImp
           <div className="flex items-center gap-2">
             <span className="material-symbols-outlined text-[18px] text-primary">security</span>
             <span>
-              Seluruh rekaman terenkripsi SSL 256-bit dan dicatat secara atomik di Supabase PostgreSQL dengan RLS (Row Level Security).
+              Prototipe ini belum memiliki database, enkripsi penyimpanan aplikasi, atau kebijakan akses RLS. Jangan gunakan data pribadi siswa sungguhan.
             </span>
           </div>
           <span className="text-[11px] text-outline font-semibold">ZIESORRA Core v2.4</span>

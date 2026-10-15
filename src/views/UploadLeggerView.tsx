@@ -52,6 +52,18 @@ export const UploadLeggerView: React.FC<UploadLeggerViewProps> = ({ onSuccessImp
     });
   }, [leggerItems, searchQuery, activeTab]);
 
+  const downloadLeggerTemplate = () => {
+    const csv = '\uFEFFNo;NIS;NISN;Nama;Pancasila;Bahasa Indonesia;Matematika;IPAS;Seni Budaya;PJOK\r\n1;;;;;;;;;';
+    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = 'template-legger-parent-insight.csv';
+    link.click();
+    URL.revokeObjectURL(url);
+    showToast('Template CSV berhasil diunduh. Fitur impor otomatis belum aktif.');
+  };
+
   const handleFixAnomalies = () => {
     setLeggerItems((prev) =>
       prev.map((item) => {
@@ -79,7 +91,7 @@ export const UploadLeggerView: React.FC<UploadLeggerViewProps> = ({ onSuccessImp
     );
     setSelectedNos([1, 2, 3, 4, 5, 6, 7]);
     setFixModalOpen(false);
-    showToast('2 Anomali skor berhasil diperbaiki! Status sekarang valid.');
+    showToast('Perubahan validasi hanya berlaku pada pratinjau ini; belum tersimpan ke server.');
   };
 
   const handleExecuteImport = () => {
@@ -101,7 +113,7 @@ export const UploadLeggerView: React.FC<UploadLeggerViewProps> = ({ onSuccessImp
       };
       setImportHistories([newHistory, ...importHistories]);
       onSuccessImport(validCount);
-      showToast(`${validCount} Data Siswa Legger Nilai Berhasil Disinkronkan ke Database Supabase!`);
+      showToast(`${validCount} baris dipilih pada pratinjau prototipe; belum tersimpan ke server.`);
     }, 1400);
   };
 
@@ -147,7 +159,7 @@ export const UploadLeggerView: React.FC<UploadLeggerViewProps> = ({ onSuccessImp
 
         <div className="flex items-center gap-3 flex-wrap sm:flex-nowrap shrink-0">
           <button
-            onClick={() => showToast('Template excel legger (.xlsx) berhasil diunduh.')}
+            onClick={() => downloadLeggerTemplate()}
             className="flex items-center gap-2 px-4 py-2.5 rounded-lg bg-surface-container text-on-surface hover:bg-surface-container-high text-xs font-semibold transition-all shadow-sm"
             type="button"
           >
@@ -259,7 +271,7 @@ export const UploadLeggerView: React.FC<UploadLeggerViewProps> = ({ onSuccessImp
             <h2 className="text-lg font-bold text-on-surface">Konfigurasi Target Legger</h2>
           </div>
           <span className="text-[11px] font-semibold text-secondary bg-surface-container-low px-2.5 py-1 rounded-md self-start sm:self-auto border border-surface-container">
-            Database Tujuan: Supabase (public.legger_nilai)
+            Mode prototipe: belum terhubung ke database
           </span>
         </div>
 

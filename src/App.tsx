@@ -61,18 +61,18 @@ export default function App() {
 
   const handleAddStudent = (newStudent: Student) => {
     setStudents(prev => [newStudent, ...prev]);
-    showToast(`Siswa "${newStudent.name}" berhasil ditambahkan ke database kelas.`);
+    showToast(`Siswa "${newStudent.name}" ditambahkan ke penyimpanan browser ini, bukan database server.`);
   };
 
   const handleUpdateStudent = (updatedStudent: Student) => {
     setStudents(prev => prev.map(s => s.id === updatedStudent.id ? updatedStudent : s));
-    showToast(`Data "${updatedStudent.name}" berhasil diperbarui.`);
+    showToast(`Data "${updatedStudent.name}" diperbarui di browser ini; belum tersinkron ke server.`);
   };
 
   const handleDeleteStudent = (studentId: string) => {
     const student = students.find(s => s.id === studentId);
     setStudents(prev => prev.filter(s => s.id !== studentId));
-    showToast(`Siswa "${student?.name || 'Siswa'}" telah dihapus.`);
+    showToast(`Siswa "${student?.name || 'Siswa'}" dihapus dari penyimpanan browser ini.`);
   };
 
   const handleSuccessImport = (count: number) => {
